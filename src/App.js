@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React, { useState } from 'react';
+import { Provider, useDispatch } from 'react-redux';
+import store from './store';
+import LaunchList from './components/LaunchList';
+import SearchBar from './components/SearchBar';
+import Filters from './components/Filters';
+import { fetchLaunches } from './actions/launchActions';
 
-function App() {
+const App = () => {
+  const [query, setQuery] = useState('');
+  const [year, setYear] = useState('');
+  const [status, setStatus] = useState('');
+  const dispatch = useDispatch();
+
+  const handleSearch = (query) => {
+    setQuery(query);
+    dispatch(fetchLaunches(query, year, status));
+  };
+
+  const handleFilterChange = (year, status) => {
+    setYear(year);
+    setStatus(status);
+    dispatch(fetchLaunches(query, year, status));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <div className="min-h-screen bg-gray-100 p-4">
+        <SearchBar onSearch={handleSearch} />
+        <Filters onFilterChange={handleFilterChange} />
+        <LaunchList />
+      </div>
+    </Provider>
   );
-}
+};
 
 export default App;
